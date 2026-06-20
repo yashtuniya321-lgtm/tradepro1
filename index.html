@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Trading Journal Pro</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--bg:#081a36;
+--panel:#102347;
+--card:#17315f;
+--green:#16a34a;
+--red:#dc2626;
+--blue:#2563eb;
+--purple:#7c3aed;
+--cyan:#0891b2;
+--text:#ffffff;
+--border:#28426f;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+background:var(--bg);
+color:white;
+padding:20px;
+}
+
+.container{
+max-width:1800px;
+margin:auto;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.title{
+font-size:30px;
+font-weight:700;
+}
+
+.top-buttons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.btn{
+border:none;
+padding:10px 16px;
+border-radius:10px;
+cursor:pointer;
+font-weight:600;
+color:white;
+}
+
+.btn-green{
+background:var(--green);
+}
+
+.btn-blue{
+background:var(--blue);
+}
+
+.btn-red{
+background:var(--red);
+}
+
+.btn-purple{
+background:var(--purple);
+}
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(8,1fr);
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+padding:20px;
+border-radius:14px;
+text-align:center;
+}
+
+.card h3{
+font-size:14px;
+margin-bottom:10px;
+font-weight:500;
+}
+
+.card-value{
+font-size:24px;
+font-weight:700;
+}
+
+.profit-card{
+background:var(--green);
+}
+
+.loss-card{
+background:var(--red);
+}
+
+.net-card{
+background:var(--blue);
+}
+
+.win-card{
+background:var(--purple);
+}
+
+.trade-card{
+background:#2563eb;
+}
+
+.best-card{
+background:#059669;
+}
+
+.worst-card{
+background:#b91c1c;
+}
+
+.open-card{
+background:var(--cyan);
+}
+
+.table-wrapper{
+overflow:auto;
+border-radius:12px;
+border:1px solid var(--border);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+color:black;
+min-width:1600px;
+}
+
+th{
+background:#0f172a;
+color:white;
+padding:12px;
+position:sticky;
+top:0;
+z-index:1;
+}
+
+td{
+padding:8px;
+border:1px solid #e5e7eb;
+}
+
+input,
+select,
+textarea{
+width:100%;
+padding:8px;
+border:1px solid #d1d5db;
+border-radius:6px;
+outline:none;
+}
+
+textarea{
+resize:vertical;
+min-height:40px;
+}
+
+.profit-row{
+background:#dcfce7;
+}
+
+.loss-row{
+background:#fee2e2;
+}
+
+.icon-btn{
+border:none;
+padding:8px 12px;
+cursor:pointer;
+border-radius:8px;
+font-size:18px;
+}
+
+.remark-btn{
+background:#f59e0b;
+}
+
+.photo-btn{
+background:#3b82f6;
+color:white;
+}
+
+.delete-btn{
+background:#ef4444;
+color:white;
+}
+
+.modal{
+display:none;
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.75);
+z-index:9999;
+}
+
+.modal-content{
+background:white;
+color:black;
+width:80%;
+max-height:85vh;
+overflow:auto;
+margin:3% auto;
+padding:20px;
+border-radius:12px;
+}
+
+.close{
+float:right;
+font-size:30px;
+cursor:pointer;
+font-weight:bold;
+}
+
+#remarkViewer{
+white-space:pre-wrap;
+line-height:1.7;
+font-size:16px;
+}
+
+#photoViewer{
+width:100%;
+border-radius:10px;
+}
+
+.portfolio-card{
+padding:12px;
+border:1px solid #ddd;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.analytics{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-top:20px;
+}
+
+.analytics-box{
+background:var(--panel);
+padding:15px;
+border-radius:12px;
+text-align:center;
+}
+
+.analytics-box h4{
+margin-bottom:10px;
+}
+
+@media(max-width:1200px){
+
+.dashboard{
+grid-template-columns:repeat(2,1fr);
+}
+
+.analytics{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:700px){
+
+.dashboard{
+grid-template-columns:1fr;
+}
+
+.analytics{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="title">
+📈 Trading Journal Pro
+</div>
+
+<div class="top-buttons">
+
+<button class="btn btn-green"
+onclick="addTradeRow()">
+➕ Add Row
+</button>
+
+<button class="btn btn-blue"
+onclick="showPortfolio()">
+📊 Stocks
+</button>
+
+<button class="btn btn-purple"
+onclick="exportCSV()">
+📄 Export CSV
+</button>
+
+<button class="btn btn-red"
+onclick="clearAllTrades()">
+🗑 Clear All
+</button>
+
+</div>
+
+</div>
+
+<div class="dashboard">
+
+<div class="card profit-card">
+<h3>Total Profit</h3>
+<div class="card-value" id="totalProfit">₹0</div>
+</div>
+
+<div class="card loss-card">
+<h3>Total Loss</h3>
+<div class="card-value" id="totalLoss">₹0</div>
+</div>
+
+<div class="card net-card">
+<h3>Net P&L</h3>
+<div class="card-value" id="netPnL">₹0</div>
+</div>
+
+<div class="card win-card">
+<h3>Win %</h3>
+<div class="card-value" id="winRate">0%</div>
+</div>
+
+<div class="card trade-card">
+<h3>Total Trades</h3>
+<div class="card-value" id="totalTrades">0</div>
+</div>
+
+<div class="card best-card">
+<h3>Best Trade</h3>
+<div class="card-value" id="bestTrade">₹0</div>
+</div>
+
+<div class="card worst-card">
+<h3>Worst Trade</h3>
+<div class="card-value" id="worstTrade">₹0</div>
+</div>
+
+<div class="card open-card">
+<h3>Open Positions</h3>
+<div class="card-value" id="openPositions">0</div>
+</div>
+
+</div>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Share</th>
+<th>Time</th>
+<th>Qty</th>
+<th>Buy</th>
+<th>Sell</th>
+<th>Sell Date</th>
+<th>P/L</th>
+<th>Remark</th>
+<th>Photo</th>
+<th>Delete</th>
+</tr>
+</thead>
+
+<tbody id="tradeTableBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="analytics">
+
+<div class="analytics-box">
+<h4>Average Win</h4>
+<div id="avgWin">₹0</div>
+</div>
+
+<div class="analytics-box">
+<h4>Average Loss</h4>
+<div id="avgLoss">₹0</div>
+</div>
+
+<div class="analytics-box">
+<h4>Profit Factor</h4>
+<div id="profitFactor">0</div>
+</div>
+
+<div class="analytics-box">
+<h4>Closed Trades</h4>
+<div id="closedTrades">0</div>
+</div>
+
+</div>
+
+<!-- Portfolio Modal -->
+
+<div class="modal" id="portfolioModal">
+
+<div class="modal-content">
+
+<span class="close"
+onclick="closePortfolio()">&times;</span>
+
+<h2>Open Positions</h2>
+
+<br>
+
+<div id="portfolioList"></div>
+
+</div>
+
+</div>
+
+<!-- Remark Modal -->
+
+<div class="modal" id="remarkModal">
+
+<div class="modal-content">
+
+<span class="close"
+onclick="closeRemark()">&times;</span>
+
+<h2>Remark</h2>
+
+<br>
+
+<div id="remarkViewer"></div>
+
+</div>
+
+</div>
+
+<!-- Photo Modal -->
+
+<div class="modal" id="photoModal">
+
+<div class="modal-content">
+
+<span class="close"
+onclick="closePhoto()">&times;</span>
+
+<img id="photoViewer">
+
+</div>
+
+</div>
+
+<script>
+
+let trades = [];
+
+const STORAGE_KEY = "TRADING_JOURNAL_PRO_V1";
+// =========================
+// SAVE / LOAD
+// =========================
+
+function saveTrades(){
+
+localStorage.setItem(
+STORAGE_KEY,
+JSON.stringify(trades)
+);
+
+}
+
+function loadTrades(){
+
+const data =
+localStorage.getItem(STORAGE_KEY);
+
+if(data){
+
+trades =
+JSON.parse(data);
+
+}
+
+}
+
+// =========================
+// ADD TRADE
+// =========================
+
+function addTradeRow(trade = null){
+
+const obj = trade || {
+
+date:"",
+share:"",
+time:"",
+qty:"",
+buy:"",
+sell:"",
+sellDate:"",
+remark:"",
+photo:""
+
+};
+
+trades.push(obj);
+
+renderTable();
+
+saveTrades();
+
+}
+
+// =========================
+// DELETE TRADE
+// =========================
+
+function deleteTrade(index){
+
+if(
+confirm(
+"Delete this trade?"
+)
+){
+
+trades.splice(index,1);
+
+renderTable();
+
+saveTrades();
+
+calculateAnalytics();
+
+}
+
+}
+
+// =========================
+// UPDATE FIELD
+// =========================
+
+function updateField(
+index,
+field,
+value
+){
+
+trades[index][field] = value;
+
+saveTrades();
+
+calculateAnalytics();
+
+}
+
+// =========================
+// PHOTO UPLOAD
+// =========================
+
+function uploadPhoto(
+event,
+index
+){
+
+const file =
+event.target.files[0];
+
+if(!file)
+return;
+
+const reader =
+new FileReader();
+
+reader.onload =
+function(e){
+
+trades[index].photo =
+e.target.result;
+
+saveTrades();
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+// =========================
+// REMARK POPUP
+// =========================
+
+function showRemark(index){
+
+document
+.getElementById(
+"remarkViewer"
+)
+.innerText =
+trades[index].remark ||
+"No Remark";
+
+document
+.getElementById(
+"remarkModal"
+)
+.style.display =
+"block";
+
+}
+
+function closeRemark(){
+
+document
+.getElementById(
+"remarkModal"
+)
+.style.display =
+"none";
+
+}
+
+// =========================
+// PHOTO POPUP
+// =========================
+
+function showPhoto(index){
+
+if(
+!trades[index].photo
+){
+
+alert(
+"No Photo Uploaded"
+);
+
+return;
+
+}
+
+document
+.getElementById(
+"photoViewer"
+)
+.src =
+trades[index].photo;
+
+document
+.getElementById(
+"photoModal"
+)
+.style.display =
+"block";
+
+}
+
+function closePhoto(){
+
+document
+.getElementById(
+"photoModal"
+)
+.style.display =
+"none";
+
+}
+
+// =========================
+// PORTFOLIO
+// =========================
+
+function showPortfolio(){
+
+let html = "";
+
+const openTrades =
+trades.filter(
+t => !t.sell
+);
+
+if(
+openTrades.length === 0
+){
+
+html =
+"<h3>No Open Positions</h3>";
+
+}
+else{
+
+openTrades.forEach(
+trade => {
+
+html += `
+
+<div class="portfolio-card">
+
+<h3>
+${trade.share || "Unnamed"}
+</h3>
+
+<p>
+Quantity:
+${trade.qty || 0}
+</p>
+
+<p>
+Buy Price:
+₹${trade.buy || 0}
+</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+document
+.getElementById(
+"portfolioList"
+)
+.innerHTML = html;
+
+document
+.getElementById(
+"portfolioModal"
+)
+.style.display =
+"block";
+
+}
+
+function closePortfolio(){
+
+document
+.getElementById(
+"portfolioModal"
+)
+.style.display =
+"none";
+
+}
+
+// =========================
+// CALCULATE PNL
+// =========================
+
+function getPnL(trade){
+
+if(
+trade.sell === ""
+||
+trade.sell === null
+||
+trade.sell === undefined
+){
+
+return null;
+
+}
+
+const buy =
+Number(
+trade.buy || 0
+);
+
+const sell =
+Number(
+trade.sell || 0
+);
+
+const qty =
+Number(
+trade.qty || 0
+);
+
+return (
+sell - buy
+)
+*
+qty;
+
+}
+
+// =========================
+// TABLE RENDER
+// =========================
+
+function renderTable(
+rebuild = true
+){
+
+const tbody =
+document
+.getElementById(
+"tradeTableBody"
+);
+
+tbody.innerHTML = "";
+
+trades.forEach(
+(
+trade,
+index
+) => {
+
+const pnl =
+getPnL(trade);
+
+const row =
+document.createElement(
+"tr"
+);
+
+if(
+pnl !== null
+){
+
+if(pnl > 0){
+
+row.classList.add(
+"profit-row"
+);
+
+}
+
+if(pnl < 0){
+
+row.classList.add(
+"loss-row"
+);
+
+}
+
+}
+
+row.innerHTML = `
+
+<td>
+
+<input
+type="date"
+value="${trade.date}"
+oninput="
+updateField(
+${index},
+'date',
+this.value
+)
+">
+
+</td>
+
+<td>
+
+<input
+type="text"
+value="${trade.share}"
+placeholder="Stock"
+oninput="
+updateField(
+${index},
+'share',
+this.value
+)
+">
+
+</td>
+
+<td>
+
+<input
+type="time"
+value="${trade.time}"
+oninput="
+updateField(
+${index},
+'time',
+this.value
+)
+">
+
+</td>
+
+<td>
+
+<input
+type="number"
+value="${trade.qty}"
+oninput="
+updateField(
+${index},
+'qty',
+this.value
+)
+">
+
+</td>
+
+<td>
+
+<input
+type="number"
+value="${trade.buy}"
+oninput="
+updateField(
+${index},
+'buy',
+this.value
+)
+">
+
+</td>
+
+<td>
+
+<input
+type="number"
+value="${trade.sell}"
+oninput="
+updateField(
+${index},
+'sell',
+this.value
+)
+">
+
+</td>
+
+<td>
+
+<input
+type="date"
+value="${trade.sellDate}"
+oninput="
+updateField(
+${index},
+'sellDate',
+this.value
+)
+">
+
+</td>
+
+<td>
+
+${pnl === null
+?
+''
+:
+'₹'+pnl.toFixed(2)
+}
+
+</td>
+
+<td>
+
+<button
+class="icon-btn remark-btn"
+onclick="
+showRemark(
+${index}
+)
+">
+📝
+</button>
+
+<br><br>
+
+<textarea
+placeholder="Remark"
+oninput="
+updateField(
+${index},
+'remark',
+this.value
+)
+">${trade.remark}</textarea>
+
+</td>
+
+<td>
+
+<input
+type="file"
+accept="image/*"
+onchange="
+uploadPhoto(
+event,
+${index}
+)
+">
+
+<br><br>
+
+<button
+class="icon-btn photo-btn"
+onclick="
+showPhoto(
+${index}
+)
+">
+📷
+</button>
+
+</td>
+
+<td>
+
+<button
+class="icon-btn delete-btn"
+onclick="
+deleteTrade(
+${index}
+)
+">
+🗑
+</button>
+
+</td>
+
+`;
+
+tbody.appendChild(
+row
+);
+
+});
+
+}
+// =========================
+// ANALYTICS
+// =========================
+
+function calculateAnalytics(){
+
+let totalProfit = 0;
+let totalLoss = 0;
+
+let wins = 0;
+let losses = 0;
+
+let bestTrade = 0;
+let worstTrade = 0;
+
+let totalWinAmount = 0;
+let totalLossAmount = 0;
+
+let closedTrades = 0;
+let openPositions = 0;
+
+trades.forEach(trade=>{
+
+const pnl = getPnL(trade);
+
+if(pnl === null){
+
+openPositions++;
+return;
+
+}
+
+closedTrades++;
+
+if(pnl > 0){
+
+wins++;
+
+totalProfit += pnl;
+
+totalWinAmount += pnl;
+
+if(pnl > bestTrade){
+
+bestTrade = pnl;
+
+}
+
+}
+
+else if(pnl < 0){
+
+losses++;
+
+totalLoss += Math.abs(pnl);
+
+totalLossAmount += Math.abs(pnl);
+
+if(pnl < worstTrade){
+
+worstTrade = pnl;
+
+}
+
+}
+
+});
+
+const totalTrades =
+wins + losses;
+
+const netPnL =
+totalProfit - totalLoss;
+
+const winRate =
+totalTrades > 0
+?
+((wins/totalTrades)*100)
+.toFixed(2)
+:
+0;
+
+const avgWin =
+wins > 0
+?
+(totalWinAmount / wins)
+.toFixed(2)
+:
+0;
+
+const avgLoss =
+losses > 0
+?
+(totalLossAmount / losses)
+.toFixed(2)
+:
+0;
+
+const profitFactor =
+totalLoss > 0
+?
+(totalProfit / totalLoss)
+.toFixed(2)
+:
+totalProfit > 0
+?
+"∞"
+:
+0;
+
+document.getElementById(
+"totalProfit"
+).innerText =
+"₹"+totalProfit.toFixed(2);
+
+document.getElementById(
+"totalLoss"
+).innerText =
+"₹"+totalLoss.toFixed(2);
+
+document.getElementById(
+"netPnL"
+).innerText =
+"₹"+netPnL.toFixed(2);
+
+document.getElementById(
+"winRate"
+).innerText =
+winRate + "%";
+
+document.getElementById(
+"totalTrades"
+).innerText =
+totalTrades;
+
+document.getElementById(
+"bestTrade"
+).innerText =
+"₹"+bestTrade.toFixed(2);
+
+document.getElementById(
+"worstTrade"
+).innerText =
+"₹"+worstTrade.toFixed(2);
+
+document.getElementById(
+"openPositions"
+).innerText =
+openPositions;
+
+document.getElementById(
+"avgWin"
+).innerText =
+"₹"+avgWin;
+
+document.getElementById(
+"avgLoss"
+).innerText =
+"₹"+avgLoss;
+
+document.getElementById(
+"profitFactor"
+).innerText =
+profitFactor;
+
+document.getElementById(
+"closedTrades"
+).innerText =
+closedTrades;
+
+}
+
+// =========================
+// EXPORT CSV
+// =========================
+
+function exportCSV(){
+
+let csv =
+
+"Date,Share,Time,Qty,Buy,Sell,SellDate,PnL,Remark\n";
+
+trades.forEach(trade=>{
+
+const pnl =
+getPnL(trade);
+
+csv +=
+
+`"${trade.date}",
+"${trade.share}",
+"${trade.time}",
+"${trade.qty}",
+"${trade.buy}",
+"${trade.sell}",
+"${trade.sellDate}",
+"${pnl ?? ''}",
+"${(trade.remark||'').replace(/"/g,'""')}"
+\n`;
+
+});
+
+const blob =
+new Blob(
+[csv],
+{
+type:
+'text/csv'
+}
+);
+
+const url =
+URL.createObjectURL(blob);
+
+const a =
+document.createElement('a');
+
+a.href = url;
+
+a.download =
+'TradingJournal.csv';
+
+document.body
+.appendChild(a);
+
+a.click();
+
+document.body
+.removeChild(a);
+
+URL.revokeObjectURL(url);
+
+}
+
+// =========================
+// CLEAR ALL
+// =========================
+
+function clearAllTrades(){
+
+const yes =
+confirm(
+"Delete ALL trades?"
+);
+
+if(!yes)
+return;
+
+trades = [];
+
+saveTrades();
+
+renderTable();
+
+calculateAnalytics();
+
+}
+
+// =========================
+// AUTO INIT
+// =========================
+
+loadTrades();
+
+if(
+trades.length === 0
+){
+
+addTradeRow();
+
+}
+else{
+
+renderTable();
+
+calculateAnalytics();
+
+}
+
+// =========================
+// AUTO SAVE TIMER
+// =========================
+
+setInterval(()=>{
+
+saveTrades();
+
+},3000);
+
+// =========================
+// CLOSE MODALS
+// =========================
+
+window.onclick =
+function(event){
+
+const portfolio =
+document.getElementById(
+"portfolioModal"
+);
+
+const remark =
+document.getElementById(
+"remarkModal"
+);
+
+const photo =
+document.getElementById(
+"photoModal"
+);
+
+if(event.target===portfolio){
+
+closePortfolio();
+
+}
+
+if(event.target===remark){
+
+closeRemark();
+
+}
+
+if(event.target===photo){
+
+closePhoto();
+
+}
+
+};
+// =========================
+// FUTURE FEATURES
+// =========================
+//
+// Version 2:
+//
+// Chart.js Equity Curve
+// Monthly Analytics
+// Excel Export
+// Backup JSON
+// Import JSON
+// Search Stock
+// Filters
+// Tags
+// Risk Reward
+// Brokerage
+// Charges
+// Net After Charges
+//
+// =========================
+
+</script>
+
+</body>
+</html>
