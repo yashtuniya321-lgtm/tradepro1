@@ -597,31 +597,49 @@ calculateAnalytics();
 // PHOTO UPLOAD
 // =========================
 
-function uploadPhoto(
-event,
-index
-){
+function showPhoto(index){
 
-const file =
-event.target.files[0];
+const photos =
+trades[index].photos || [];
 
-if(!file)
+if(photos.length===0){
+
+alert("No Photos");
 return;
 
-const reader =
-new FileReader();
+}
 
-reader.onload =
-function(e){
+let html="";
 
-trades[index].photo =
-e.target.result;
+photos.forEach(photo=>{
 
-saveTrades();
+html+=`
+<img
+src="${photo}"
+style="
+width:200px;
+margin:10px;
+border-radius:10px;
+cursor:pointer;
+"
+onclick="
+window.open('${photo}','_blank')
+">
+`;
 
-};
+});
 
-reader.readAsDataURL(file);
+document.getElementById(
+"photoViewer"
+).outerHTML=
+
+`<div id="photoViewer">
+${html}
+</div>`;
+
+document.getElementById(
+"photoModal"
+).style.display="block";
 
 }
 
@@ -1025,6 +1043,7 @@ this.value
 <input
 type="file"
 accept="image/*"
+multilpe
 onchange="
 uploadPhoto(
 event,
@@ -1041,7 +1060,7 @@ showPhoto(
 ${index}
 )
 ">
-📷
+📷 ${trade.photos ? trade.photos.length : 0}
 </button>
 
 </td>
