@@ -1056,9 +1056,15 @@ document.getElementById(
 ).click();
 ">
 ➕
-</button>
+</button<button
+class="icon-btn photo-btn"
+onclick="
+showPhoto(
+${index}
 )
 ">
+📷 ${trade.photos ? trade.photos.length : 0}
+</button>
 
 <br><br>
 
