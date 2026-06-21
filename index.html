@@ -1042,12 +1042,21 @@ this.value
 
 <input
 type="file"
+id="photoInput${index}"
 accept="image/*"
-multilpe
-onchange="
-uploadPhoto(
-event,
-${index}
+multiple
+style="display:none"
+onchange="uploadPhoto(event,${index})">
+
+<button
+class="icon-btn photo-btn"
+onclick="
+document.getElementById(
+'photoInput${index}'
+).click();
+">
+➕
+</button>
 )
 ">
 
